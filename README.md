@@ -1,3 +1,5 @@
+![raytracer](.github/preview.png)
+
 # RAYTRACER
 
 > A CPU ray tracer built from scratch. One pixel at a time.
