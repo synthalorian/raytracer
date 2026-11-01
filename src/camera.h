@@ -13,6 +13,8 @@ public:
            double defocus_angle = 0, double focus_dist = 10) {
         auto image_height = int(image_width / aspect_ratio);
         image_height = (image_height < 1) ? 1 : image_height;
+        img_w = image_width; img_h = image_height;
+        this->defocus_angle = defocus_angle;
 
         auto theta = degrees_to_radians(vfov);
         auto h = tan(theta/2);
@@ -34,8 +36,10 @@ public:
     }
 
     ray get_ray(int i, int j) const {
-        auto pixel_center = lower_left_corner + (i * horizontal) + (j * vertical);
-        auto pixel_sample = pixel_center + pixel_sample_square();
+        // map pixel (i, j) to viewport fractions; row 0 is the top of the image
+        auto s = (i + random_double()) / img_w;
+        auto t = ((img_h - 1 - j) + random_double()) / img_h;
+        auto pixel_sample = lower_left_corner + s * horizontal + t * vertical;
 
         auto ray_origin = (defocus_angle <= 0) ? origin : defocus_disk_sample();
         auto ray_direction = pixel_sample - ray_origin;
@@ -52,6 +56,7 @@ private:
     vec3 defocus_disk_u;
     vec3 defocus_disk_v;
     double defocus_angle;
+    int img_w, img_h;
 
     static double degrees_to_radians(double degrees) {
         return degrees * pi / 180.0;
